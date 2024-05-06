@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jq-3.1.js"></script>
+
+    <style>
+        body {
+            background-color: rgb(125, 125, 123);
+        }
+
+        table {
+            height: 300px;
+            width: 300px;
+            background-color: rgb(241, 241, 247);
+            box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+            border-radius: 9px;
+            border: none;
+        }
+
+        tr {
+            height: 100px;
+            width: 450px;
+        }
+
+        td {
+            height: 100;
+            width: 100px;
+            background-color: rgb(158, 165, 237);
+            border-radius: 9px;
+        }
+
+        img {
+            width: 90px;
+            height: 90px;
+        }
+
+        #gameHint {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1 id="gameHint">X Turn</h1>
+    <table align="center" cellspacing="5" border="2">
+        <tr>
+            <td data-index="0"></td>
+            <td data-index="1"></td>
+            <td data-index="2"></td>
+        </tr>
+
+        <tr>
+            <td data-index="3"></td>
+            <td data-index="4"></td>
+            <td data-index="5"></td>
+        </tr>
+
+        <tr>
+            <td data-index="6"></td>
+            <td data-index="7"></td>
+            <td data-index="8"></td>
+        </tr>
+    </table>
+
+    <p>
+        <button id="restartBtn">Restart</button>
+    </p>
+
+
+    <script>
+
+        var turn = 1;  //1=X, 0=O
+        var gameStatus = true;
+        var gameState = [2, 2, 2, 2, 2, 2, 2, 2, 2];
+        var winState = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        $(document).ready(function () {
+            $("td").click(function () {
+                var index = $(this).attr("data-index");
+                if (gameStatus == true && gameState[index] == 2) {
+                    if (turn == 1) {
+                        $(this).html("<img src='X.png'>");
+                        turn = 0;
+                        gameState[index] = 1;
+                        $("#gameHint").html("O Turn");
+                    } else if (turn == 0) {
+
+                        $(this).html("<img src='O.png'>");
+                        $(this).css("background-color", "grey");
+                        turn = 1;
+                        gameState[index] = 0;
+                        $("#gameHint").html("X Turn");
+                    }
+                }
+
+                //check win status
+                var gameover = true;
+                for (var i = 0; i < gameState.length; i++) {
+                    if (gameState[i] == 2) {
+                        gameover = false;
+                        break;
+                    }
+                }
+                    if (gameover == true) {
+                        $("#gameHint").html("Game Over, No Player Won");
+                        $("#restartBtn").show();
+                    }
+
+                    //check win status
+                    var winner = checkwin();
+                    if (winner == 1) {
+                        $("#gameHint").html("X player Won");
+                        gameStatus = false;
+                        $("#restartBtn").show();
+
+                    } else if (winner == 0) {
+                        $("#gameHint").html("O player Won");
+                        gameStatus = false;
+                        $("#restartBtn").show();
+                    }
+
+
+
+            });
+
+            $("#restartBtn").click(function () {
+                window.location.reload();
+            });
+
+        });
+
+        function checkwin() {
+            var status = false;
+            for (var i = 0; i < winState.length; i++) {
+                if ((gameState[winState[i][0]] == gameState[winState[i][1]] && gameState[winState[i][1]] == gameState[winState[i][2]] && gameState[winState[i][0]] != 2)) {
+                    status = true;
+                    break;
+                }
+            }
+            var winplayer = 2;
+            if (status == true) {
+                if (turn == 0) {
+                    winplayer = 1;
+                } else {
+                    winplayer = 0;
+                }
+            }
+            return winplayer;
+        }
+    </script>
+
+</body>
+
+</html>
